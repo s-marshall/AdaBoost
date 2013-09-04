@@ -1,3 +1,5 @@
+require "optparse"
+
 class Dimensions
 	attr_accessor :x, :y
 	
@@ -239,24 +241,20 @@ number_of_training_examples = 2000
 number_of_samples_for_weak_learner = 80
 number_of_boosting_rounds = 200
 
-args = $*
-i = 0
-while (args[i]) 
-	if (args[i][0] == "-")
-		case args[i][1]
-		when "t"
-			number_of_training_examples = args[i+1].to_i
-		when "w"
-			number_of_samples_for_weak_learner = args[i+1].to_i
-		when "b"
-			number_of_boosting_rounds = args[i+1].to_i
-		end
-		i += 1
-	else
-		puts "boosted [-t number_of_training_examples] [-w number_of_weak_learners] [-b number_of_boosting_iterations]"
-	end
-	i += 1
-end
+OptionParser.new {|options|
+	options.on("-t [int]", "# number of training examples"){|value|
+		number_of_training_examples = value.to_i
+	}
+
+	options.on("-w [int]", "# number of weak learners"){|value|
+		number_of_samples_for_weak_learner = value.to_i
+	}
+
+	options.on("-b [int]", "# number of boosting iterations"){|value|
+		number_of_boosting_rounds = value.to_i
+	}
+	options.parse!(ARGV)
+}
 
 display = DigitDisplay.new
 puts "Creating #{number_of_training_examples} training examples..."
